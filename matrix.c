@@ -25,8 +25,10 @@ void softmax(Matrix matrix){
             matrix.ptr[i][j] /= sum;
         }
     }
-} // <- check
+}
 void d_softmax(Matrix destination,Matrix matrix){
+    assert(destination.rows==matrix.rows);
+    assert(destination.cols==matrix.cols);
     for(int i=0;i<matrix.rows;i++){
         for(int j=0;j<matrix.cols;j++){
             if(i==j){
