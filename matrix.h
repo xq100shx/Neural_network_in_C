@@ -6,6 +6,7 @@
 #define NEURALNETWORK_MATRIX_H
 
 #define PRINT_MATRIX(m) matrix_print(m,#m)
+#define ACTIVATE(matrix,func) apply_actvf(func,matrix,#func)
 typedef struct{
     size_t rows;
     size_t cols;
@@ -21,7 +22,7 @@ void matrix_sum(Matrix destination, Matrix a);
 void matrix_randomize(Matrix matrix, float min, float max);
 void matrix_print(Matrix matrix,const char* name_of_matrix);
 void matrixcpy(Matrix destination, Matrix source);
-void apply_actvf(float(*f)(float));
+void apply_actvf(float(*f)(float), Matrix matrix, const char* name_of_func);
 void free_matrix(Matrix matrix);
 
 #endif //NEURALNETWORK_MATRIX_H

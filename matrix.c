@@ -39,7 +39,7 @@ void d_softmax(Matrix destination,Matrix matrix){
             }
         }
     }
-} // <- check
+}
 Matrix matrix_allocate(size_t rows, size_t cols){
     Matrix matrix;
     matrix.rows = rows;
@@ -115,6 +115,7 @@ void matrix_print(Matrix matrix,const char* name_of_matrix) {
         }
         printf("]\n");
     }
+    printf("\n");
 }
 void matrixcpy(Matrix destination, Matrix source){
     assert(source.rows == destination.rows);
@@ -123,6 +124,14 @@ void matrixcpy(Matrix destination, Matrix source){
     for(i=0;i<destination.rows;i++){
         for(j=0;j<destination.cols;j++){
             destination.ptr[i][j] = source.ptr[i][j];
+        }
+    }
+}
+void apply_actvf(float(*actvfunc)(float),Matrix matrix,const char* name_of_func){
+    printf("Applying: %s\n",name_of_func);
+    for(int i=0;i<matrix.rows;i++){
+        for(int j=0;j<matrix.cols;j++){
+            matrix.ptr[i][j] = actvfunc(matrix.ptr[i][j]);
         }
     }
 }

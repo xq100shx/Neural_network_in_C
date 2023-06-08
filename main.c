@@ -81,6 +81,46 @@ int unit_testing(){
     free_matrix(test);
     free_matrix(testDst);
 #endif
+#if 0 //actv_apply test
+    Matrix test = matrix_allocate(5,1);
+    matrix_randomize(test,-5,5);
+    printf("Input:\n");
+    PRINT_MATRIX(test);
+    ACTIVATE(test,Sigmoid);
+    printf("Result:\n");
+    PRINT_MATRIX(test);
+    matrix_randomize(test,-5,5);
+    printf("Input:\n");
+    PRINT_MATRIX(test);
+    ACTIVATE(test,d_Sigmoid);
+    printf("Result:\n");
+    PRINT_MATRIX(test);
+    matrix_randomize(test,-5,5);
+    printf("Input:\n");
+    PRINT_MATRIX(test);
+    ACTIVATE(test,ReLU);
+    printf("Result:\n");
+    PRINT_MATRIX(test);
+    matrix_randomize(test,-5,5);
+    printf("Input:\n");
+    PRINT_MATRIX(test);
+    ACTIVATE(test,d_ReLU);
+    printf("Result:\n");
+    PRINT_MATRIX(test);
+    matrix_randomize(test,-5,5);
+    printf("Input:\n");
+    PRINT_MATRIX(test);
+    ACTIVATE(test,Leaky_ReLU);
+    printf("Result:\n");
+    PRINT_MATRIX(test);
+    matrix_randomize(test,-5,5);
+    printf("Input:\n");
+    PRINT_MATRIX(test);
+    ACTIVATE(test,d_Leaky_ReLU);
+    printf("Result:\n");
+    PRINT_MATRIX(test);
+    free_matrix(test);
+#endif
 #if 0 //softmax test
     Matrix test = matrix_allocate(5,1);
     matrix_randomize(test,0,1);

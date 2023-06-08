@@ -4,11 +4,11 @@
 #include <math.h>
 #include "actvfunc.h"
 
-float sigmoid(float x){
+float Sigmoid(float x){
     return 1.0f/(1.0f+expf(-x));
 }
-float d_sigmoid(float x){
-    return sigmoid(x)*(1- sigmoid(x));
+float d_Sigmoid(float x){
+    return Sigmoid(x)*(1- Sigmoid(x));
 }
 float ReLU(float x){    //im not sure if it's correct
     if(x>0) return x;
@@ -18,11 +18,11 @@ float d_ReLU(float x){  //im not sure if it's correct
     if(x>0) return 1.0f;
     else return 0.0f;
 }
-float Leaky_ReLu(float x){  //im not sure if it's correct
+float Leaky_ReLU(float x){  //im not sure if it's correct
     if(x>0) return x;
     else return 0.01f*x;
 }
-float d_Leaky_ReLu(float x){    //im not sure if it's correct
+float d_Leaky_ReLU(float x){    //im not sure if it's correct
     if(x>0) return 1.0f;
     else return 0.01f;
 }
