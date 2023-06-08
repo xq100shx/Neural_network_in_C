@@ -1,0 +1,8 @@
+//
+// Created by Krzysiek on 08.06.2023.
+//
+
+#ifndef NEURALNETWORK_MLEARNING_H
+#define NEURALNETWORK_MLEARNING_H
+
+#endif //NEURALNETWORK_MLEARNING_H
