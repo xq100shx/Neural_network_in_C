@@ -3,6 +3,7 @@
 #include <time.h>
 #include "matrix.h"
 #include "actvfunc.h"
+#include "nnetwork.h"
 
 int unit_testing();
 
@@ -13,6 +14,8 @@ int main() {
 int unit_testing(){
     srand(time(NULL));
     float x = 10;
+    size_t architecture[] = {2,2,1};
+    size_t layers = sizeof(architecture)/sizeof(architecture[0]);
 #if 0 //randf() test
     printf("%d\n",RAND_MAX);
     for(size_t i=0;i<5;i++) {
@@ -160,6 +163,34 @@ int unit_testing(){
 #endif
 #if 0 //d_LeakyReLU test
     printf("derivtive of Leaky ReLU = %f\n",d_Leaky_ReLu(x));
+#endif
+#if 0 //nn_allocate + nn_print test
+    Network test = nn_allocate(layers,architecture);
+    PRINT_NN(test);
+    free_network(test);
+#endif
+#if 0 //nn_randomize test
+    Network test = nn_allocate(layers,architecture);
+    nn_randomize(test,-5,5);
+    PRINT_NN(test);
+    free_network(test);
+#endif
+#if 0 //nn_clean test
+    Network test = nn_allocate(layers,architecture);
+    nn_randomize(test,-5,5);
+    PRINT_NN(test);
+    printf("cleaning...\n");
+    nn_clean(test);
+    PRINT_NN(test);
+    free_network(test);
+#endif
+#if 0 //save_values test
+    Network test = nn_allocate(layers,architecture);
+    nn_randomize(test,-5,5);
+    PRINT_NN(test);
+    printf("saving...\n");
+    save_values(test);
+    free_network(test);
 #endif
     return 0;
 }

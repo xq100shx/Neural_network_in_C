@@ -4,7 +4,7 @@
 
 #ifndef NEURALNETWORK_MATRIX_H
 #define NEURALNETWORK_MATRIX_H
-
+#include <stddef.h>
 #define PRINT_MATRIX(m) matrix_print(m,#m)
 #define ACTIVATE(matrix,func) apply_actvf(func,matrix,#func)
 typedef struct{

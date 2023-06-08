@@ -4,6 +4,8 @@
 
 #ifndef NEURALNETWORK_NNETWORK_H
 #define NEURALNETWORK_NNETWORK_H
+#include <stddef.h>
+#include "matrix.h"
 #define PRINT_NN(nn) nn_print((nn),(#nn))
 #define NN_INPUT(nn) (nn).activations[0]
 #define NN_OUTPUT(nn) (nn).activations[(nn).count]
