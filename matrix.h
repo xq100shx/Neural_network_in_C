@@ -23,6 +23,8 @@ void matrix_randomize(Matrix matrix, float min, float max);
 void matrix_print(Matrix matrix,const char* name_of_matrix);
 void matrixcpy(Matrix destination, Matrix source);
 void apply_actvf(float(*f)(float), Matrix matrix, const char* name_of_func);
+void matrix_multiply(Matrix matrix,float constant);
+Matrix matrix_transpose(Matrix matrix);
 void free_matrix(Matrix matrix);
 
 #endif //NEURALNETWORK_MATRIX_H

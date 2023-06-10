@@ -1,20 +1,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stddef.h>
 #include "matrix.h"
 #include "actvfunc.h"
 #include "nnetwork.h"
+#include "mlearning.h"
 
 int unit_testing();
 
 int main() {
-    unit_testing();
+    size_t architecture[] = {2, 2, 2};
+    size_t layers = sizeof(architecture) / sizeof(architecture[0]);
+    size_t input_size = architecture[0];
+    size_t output_size = architecture[layers - 1];
+    size_t data_sets = 100;
+    float learning_rate = 0.25f;
+
+    srand(time(NULL));
+    Network nn = nn_allocate(layers, architecture);
+    Network nnG = nn_allocate(layers, architecture);
+    for(int i=0;i<100;i++) {
+        nn_randomize(nn, -1, 1);
+        printf("cost = %f\n", cost(nn, input_size, output_size, data_sets));
+//        backpropagation(nn, nnG, input_size, output_size, data_sets);
+    }
+    free_network(nn);
+    free_network(nnG);
+//    unit_testing();
     return 0;
 }
 int unit_testing(){
-    srand(time(NULL));
     float x = 10;
-    size_t architecture[] = {2,2,1};
+    size_t architecture[] = {2,2,2};
     size_t layers = sizeof(architecture)/sizeof(architecture[0]);
 #if 0 //randf() test
     printf("%d\n",RAND_MAX);
@@ -152,6 +170,27 @@ int unit_testing(){
 #if 0 //d_sigmoid test
     printf("derivative of sigmoid = %f\n",d_sigmoid(x));
 #endif
+#if 0 // matrix_multiply test
+    Matrix test = matrix_allocate(3,3);
+    matrix_fill(test,3);
+    PRINT_MATRIX(test);
+    printf("Multiplying...\n");
+    matrix_multiply(test,3);
+    PRINT_MATRIX(test);
+    free_matrix(test);
+#endif
+#if 0 // matrix_transposition test
+    Matrix test = matrix_allocate(5,4);
+    float min = 0.0f;
+    float max = 100.0f;
+    matrix_randomize(test,min,max);
+    PRINT_MATRIX(test);
+    printf("Transposing...\n");
+    Matrix transposed = matrix_transpose(test);
+    PRINT_MATRIX(transposed);
+    free_matrix(transposed);
+    free_matrix(test);
+#endif
 #if 0 //ReLU test
     printf("ReLU = %f\n",ReLU(x));
 #endif
@@ -190,6 +229,22 @@ int unit_testing(){
     PRINT_NN(test);
     printf("saving...\n");
     save_values(test);
+    free_network(test);
+#endif
+#if 0 // forward test
+    Network test = nn_allocate(layers,architecture);
+    nn_randomize(test,-5,5);
+    printf("Input neural network:\n");
+    PRINT_NN(test);
+    printf("Forwarding...\n");
+    forward(test);
+    PRINT_NN(test);
+    free_network(test);
+#endif
+#if 0 //cost test
+    Network test = nn_allocate(layers,architecture);
+    nn_randomize(test,-1,1);
+    printf("avg cost = %f",cost(test,input_size,output_size, data_sets));
     free_network(test);
 #endif
     return 0;

@@ -1,1 +1,1 @@
-gcc main.c nnetwork.c matrix.c actvfunc.c nnetwork.h matrix.h actvfunc.h -o NeuralNetwork
+gcc main.c nnetwork.c matrix.c actvfunc.c mlearning.c nnetwork.h matrix.h actvfunc.h mlearning.h -o NeuralNetwork

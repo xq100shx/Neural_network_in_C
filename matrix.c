@@ -128,7 +128,7 @@ void matrixcpy(Matrix destination, Matrix source){
     }
 }
 void apply_actvf(float(*actvfunc)(float),Matrix matrix,const char* name_of_func){
-    printf("Applying: %s\n",name_of_func);
+//    printf("Applying: %s\n",name_of_func); // func name, testing only
     for(int i=0;i<matrix.rows;i++){
         for(int j=0;j<matrix.cols;j++){
             matrix.ptr[i][j] = actvfunc(matrix.ptr[i][j]);
@@ -140,4 +140,21 @@ void free_matrix(Matrix matrix){
         free(matrix.ptr[i]);
     }
     free(matrix.ptr);
+}
+void matrix_multiply(Matrix matrix,float constant){
+    for(int i=0;i<matrix.rows;i++){
+        for(int j=0;j<matrix.cols;j++){
+            matrix.ptr[i][j]*=constant;
+        }
+    }
+}
+Matrix matrix_transpose(Matrix matrix){
+    assert(matrix.ptr != NULL);
+    Matrix transpositon = matrix_allocate(matrix.cols,matrix.rows);
+    for(int i=0;i<transpositon.rows;i++){
+        for(int j=0;j<transpositon.cols;j++){
+            transpositon.ptr[i][j] = matrix.ptr[j][i];
+        }
+    }
+    return transpositon;
 }

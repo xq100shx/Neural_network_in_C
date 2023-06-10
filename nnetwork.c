@@ -77,7 +77,23 @@ void save_values(Network nn){
     FILE *file;
     size_t i=0,j=0,k=0;
     file = fopen("values.txt","a");
-    for(i =0;i<nn.count;i++) {
+    fprintf(file, "Input weights  = [\n");
+    for (j = 0; j < nn.weights[0].rows; j++) {
+        for (k = 0; k < nn.weights[0].cols; k++) {
+            fprintf(file, "%f ", nn.weights[i].ptr[j][k]);
+        }
+        fprintf(file, "\n");
+    }
+    fprintf(file, "\n]\n");
+    fprintf(file,"Input Biases = [\n");
+    for (j = 0; j < nn.biases[0].rows; j++) {
+        for (k = 0; k < nn.biases[0].cols; k++) {
+            fprintf(file, "%f ", nn.biases[i].ptr[j][k]);
+        }
+        fprintf(file, "\n");
+    }
+    fprintf(file, "\n]\n");
+    for(i =1;i<nn.count;i++) {
         fprintf(file, "Weights %zu = [\n", i);
         for (j = 0; j < nn.weights[i].rows; j++) {
             for (k = 0; k < nn.weights[i].cols; k++) {
@@ -97,4 +113,3 @@ void save_values(Network nn){
     }
     fclose(file);
 }
-//[2,2,1] num of layers 3

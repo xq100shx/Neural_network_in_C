@@ -10,7 +10,7 @@
 #define NN_INPUT(nn) (nn).activations[0]
 #define NN_OUTPUT(nn) (nn).activations[(nn).count]
 typedef struct{
-    size_t count;
+    size_t count; // layers-1 because output doesnt have weeights and biases after itself
     Matrix *weights;
     Matrix *biases;
     Matrix *activations;
