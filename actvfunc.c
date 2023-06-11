@@ -4,25 +4,25 @@
 #include <math.h>
 #include "actvfunc.h"
 
-float Sigmoid(float x){
-    return 1.0f/(1.0f+expf(-x));
+double Sigmoid(double x){
+    return 1.0/(1.0+exp(-x));
 }
-float d_Sigmoid(float x){
+double d_Sigmoid(double x){
     return Sigmoid(x)*(1- Sigmoid(x));
 }
-float ReLU(float x){    //im not sure if it's correct
+double ReLU(double x){    //im not sure if it's correct
     if(x>0) return x;
     else return 0.0f;
 }
-float d_ReLU(float x){  //im not sure if it's correct
+double d_ReLU(double x){  //im not sure if it's correct
     if(x>0) return 1.0f;
     else return 0.0f;
 }
-float Leaky_ReLU(float x){  //im not sure if it's correct
+double Leaky_ReLU(double x){  //im not sure if it's correct
     if(x>0) return x;
     else return 0.01f*x;
 }
-float d_Leaky_ReLU(float x){    //im not sure if it's correct
+double d_Leaky_ReLU(double x){    //im not sure if it's correct
     if(x>0) return 1.0f;
     else return 0.01f;
 }

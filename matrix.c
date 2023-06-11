@@ -7,13 +7,13 @@
 #include <math.h>
 #include "matrix.h"
 
-float randf(float min, float max){
-    float random = ((float) rand() / RAND_MAX);
-    float range = (max-min) * random;
+double randf(double min, double max){
+    double random = ((double) rand() / RAND_MAX);
+    double range = (max-min) * random;
     return min + range;
 }
 void softmax(Matrix matrix){
-    float sum=0;
+    double sum=0;
     for(int i=0;i<matrix.rows;i++){
         for(int j=0;j<matrix.cols;j++){
             matrix.ptr[i][j] = expf(matrix.ptr[i][j]);
@@ -44,9 +44,9 @@ Matrix matrix_allocate(size_t rows, size_t cols){
     Matrix matrix;
     matrix.rows = rows;
     matrix.cols = cols;
-    matrix.ptr = (float**)calloc(matrix.rows,sizeof(*matrix.ptr));
+    matrix.ptr = (double**)calloc(matrix.rows,sizeof(*matrix.ptr));
     for(int i=0;i<matrix.rows;i++){
-        matrix.ptr[i] = (float*)calloc(matrix.cols , sizeof(**matrix.ptr));
+        matrix.ptr[i] = (double*)calloc(matrix.cols , sizeof(**matrix.ptr));
     }
     for(int i=0;i<matrix.rows;i++){
         assert(matrix.ptr[i] != NULL);
@@ -54,7 +54,7 @@ Matrix matrix_allocate(size_t rows, size_t cols){
     assert(matrix.ptr!=NULL);
     return matrix;
 }
-void matrix_fill(Matrix matrix, float value){
+void matrix_fill(Matrix matrix, double value){
     size_t i=0,j=0;
     for(i=0;i<matrix.rows;i++){
         for(j=0;j<matrix.cols;j++){
@@ -87,7 +87,7 @@ void matrix_sum(Matrix destination, Matrix a) {
         }
     }
 }
-void matrix_randomize(Matrix matrix, float min, float max){
+void matrix_randomize(Matrix matrix, double min, double max){
     size_t i=0,j=0;
     for(i=0;i<matrix.rows;i++){
         for(j=0;j<matrix.cols;j++){
@@ -100,7 +100,7 @@ void matrix_print(Matrix matrix,const char* name_of_matrix) {
     // Znajdowanie najdłuższego elementu w tablicy
     for (int i = 0; i < matrix.rows; i++) {
         for (int j = 0; j < matrix.cols; j++) {
-            int digits = snprintf(NULL, 0, "%f", matrix.ptr[i][j]);
+            int digits = snprintf(NULL, 0, "%lf", matrix.ptr[i][j]);
             if (digits > maxDigits) {
                 maxDigits = digits;
             }
@@ -111,7 +111,7 @@ void matrix_print(Matrix matrix,const char* name_of_matrix) {
     for (int i = 0; i < matrix.rows; i++) {
         printf("[ ");
         for (int j = 0; j < matrix.cols; j++) {
-            printf("%-*.*f ", maxDigits , 6, matrix.ptr[i][j]);
+            printf("%-*.*lf ", maxDigits , 6, matrix.ptr[i][j]);
         }
         printf("]\n");
     }
@@ -127,7 +127,7 @@ void matrixcpy(Matrix destination, Matrix source){
         }
     }
 }
-void apply_actvf(float(*actvfunc)(float),Matrix matrix,const char* name_of_func){
+void apply_actvf(double(*actvfunc)(double),Matrix matrix,const char* name_of_func){
 //    printf("Applying: %s\n",name_of_func); // func name, testing only
     for(int i=0;i<matrix.rows;i++){
         for(int j=0;j<matrix.cols;j++){
@@ -141,7 +141,7 @@ void free_matrix(Matrix matrix){
     }
     free(matrix.ptr);
 }
-void matrix_multiply(Matrix matrix,float constant){
+void matrix_multiply(Matrix matrix,double constant){
     for(int i=0;i<matrix.rows;i++){
         for(int j=0;j<matrix.cols;j++){
             matrix.ptr[i][j]*=constant;

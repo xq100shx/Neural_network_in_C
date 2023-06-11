@@ -10,30 +10,36 @@
 int unit_testing();
 
 int main() {
-    size_t architecture[] = {2, 2, 2};
-    size_t layers = sizeof(architecture) / sizeof(architecture[0]);
-    size_t input_size = architecture[0];
-    size_t output_size = architecture[layers - 1];
-    size_t data_sets = 100;
-    float learning_rate = 0.25f;
+//    size_t architecture[] = {2, 2, 2};
+//    size_t layers = sizeof(architecture) / sizeof(architecture[0]);
+//    size_t input_size = architecture[0];
+//    size_t output_size = architecture[layers - 1];
+//    size_t data_sets = 100;
+//    double learning_rate = 0.25f;
 
     srand(time(NULL));
-    Network nn = nn_allocate(layers, architecture);
-    Network nnG = nn_allocate(layers, architecture);
-    for(int i=0;i<100;i++) {
-        nn_randomize(nn, -1, 1);
-        printf("cost = %f\n", cost(nn, input_size, output_size, data_sets));
+//    Network nn = nn_allocate(layers, architecture);
+//    Network nnG = nn_allocate(layers, architecture);
+//    printf("cost = %f\n", cost(nn, input_size, output_size, data_sets));
+//    nn_randomize(nn, -1, 1);
+//    for(int i=0;i<100;i++) {
+//        printf("cost = %f\n", cost(nn, input_size, output_size, data_sets));
 //        backpropagation(nn, nnG, input_size, output_size, data_sets);
-    }
-    free_network(nn);
-    free_network(nnG);
-//    unit_testing();
+//        learn(nn,nnG,learning_rate);
+//    }
+//    free_network(nn);
+//    free_network(nnG);
+    unit_testing();
     return 0;
 }
-int unit_testing(){
+int unit_testing() {
     float x = 10;
-    size_t architecture[] = {2,2,2};
-    size_t layers = sizeof(architecture)/sizeof(architecture[0]);
+    size_t architecture[] = {2, 4, 2};
+    size_t layers = sizeof(architecture) / sizeof(architecture[0]);
+    size_t input_size = 2;
+    size_t output_size = 2;
+    size_t data_sets = 100;
+    double learning_rate = 0.25f;
 #if 0 //randf() test
     printf("%d\n",RAND_MAX);
     for(size_t i=0;i<5;i++) {
@@ -242,10 +248,54 @@ int unit_testing(){
     free_network(test);
 #endif
 #if 0 //cost test
-    Network test = nn_allocate(layers,architecture);
-    nn_randomize(test,-1,1);
-    printf("avg cost = %f",cost(test,input_size,output_size, data_sets));
+    Network test = nn_allocate(layers, architecture);
+    for(int i=0;i<10;i++){
+        nn_randomize(test, -1, 1);
+        printf("avg cost = %f\n", cost(test, input_size, output_size, data_sets));
+}
     free_network(test);
+#endif
+#if 1 //backpropagation & learning test
+    Network test = nn_allocate(layers, architecture);
+    Network testG = nn_allocate(layers, architecture);
+    nn_randomize(test, -1, 1);
+
+    printf("avg cost = %f\n", cost(test, input_size, output_size, data_sets));
+    for(int i=0;i<1000;i++){
+        backpropagation(test,testG,input_size, output_size, data_sets);
+        learn(test,testG,learning_rate);
+}
+    printf("avg cost = %f\n", cost(test, input_size, output_size, data_sets));
+    free_network(test);
+    free_network(testG);
+#endif
+#if 0 // file
+    FILE *file;
+
+    file = fopen("trainingdata.txt","r");
+    int in=2;
+    int data_sets = 2;
+    int out = 1;
+    float x[in][1];
+    float buffer[out][1];
+    for(int n=0;n<data_sets;n++) {
+        for (int i = 0; i < in; i++) {
+            fscanf(file, "%f", &x[i][0]);
+        }
+        for(int i = 0;i<out;i++) {
+            fscanf(file, "%f", &buffer[i][0]);
+        }
+
+        for (int i = 0; i < in; i++) {
+            printf("%f\n",x[i][0]);
+        }
+        for(int i = 0;i<out;i++) {
+            printf("%f\n",buffer[i][0]);
+        }
+        printf("\n");
+
+    }
+    fclose(file);
 #endif
     return 0;
 }

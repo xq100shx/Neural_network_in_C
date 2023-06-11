@@ -13,19 +13,22 @@ Network nn_allocate(size_t num_of_layers,size_t *architecture){
     nn.count = num_of_layers-1;
     nn.activations = calloc(nn.count+1,sizeof(*nn.activations));
     assert(nn.activations != NULL);
+    nn.weighted_sum = calloc(nn.count,sizeof(*nn.weighted_sum));
+    assert(nn.weighted_sum != NULL);
     nn.weights = calloc(nn.count,sizeof(*nn.weights));
     assert(nn.weights != NULL);
     nn.biases = calloc(nn.count,sizeof(*nn.biases));
     assert(nn.biases!= NULL);
     for(int i=0;i<nn.count;i++){
         nn.activations[i] = matrix_allocate(architecture[i],1);
+        nn.weighted_sum[i] = matrix_allocate(architecture[i+1],1);
         nn.weights[i] = matrix_allocate(architecture[i+1],nn.activations[i].rows);
         nn.biases[i] = matrix_allocate(architecture[i+1],1);
     }
     nn.activations[nn.count] = matrix_allocate(architecture[nn.count],1);
     return nn;
 }
-void nn_randomize(Network nn ,float min,float max){
+void nn_randomize(Network nn ,double min,double max){
     size_t i=0,j=0;
     for(i=0;i<nn.count;i++){
         matrix_randomize(nn.weights[i],min,max);
@@ -42,6 +45,8 @@ void nn_print(Network nn , char* name){
     matrix_print(NN_INPUT(nn),buf);
     snprintf(buf,sizeof(buf),"Input biases");
     matrix_print(nn.biases[0], buf);
+    snprintf(buf,sizeof(buf),"Input Weighted sum");
+    matrix_print(nn.weighted_sum[0],buf);
     if(nn.count>1) {
         for (i = 1; i < nn.count; i++) {
             snprintf(buf, sizeof(buf), "Weights %zu", i);
@@ -50,6 +55,8 @@ void nn_print(Network nn , char* name){
             matrix_print(nn.activations[i], buf);
             snprintf(buf, sizeof(buf), "Biases %zu", i);
             matrix_print(nn.biases[i], buf);
+            snprintf(buf, sizeof(buf), "Weighted sum %zu", i);
+            matrix_print(nn.weighted_sum[i], buf);
         }
     }
     snprintf(buf,sizeof(buf),"Output");
@@ -61,6 +68,7 @@ void nn_clean(Network nn){
         matrix_fill(nn.weights[i],0);
         matrix_fill(nn.biases[i],0);
         matrix_fill(nn.activations[i],0);
+        matrix_fill(nn.weighted_sum[i],0);
     }
     matrix_fill(NN_OUTPUT(nn),0);
 }
@@ -68,6 +76,7 @@ void free_network(Network nn){
     size_t i=0,j=0;
     for(i=0;i<nn.count;i++){
         free_matrix(nn.activations[i]);
+        free_matrix(nn.weighted_sum[i]);
         free_matrix(nn.weights[i]);
         free_matrix(nn.biases[i]);
     }
@@ -80,7 +89,7 @@ void save_values(Network nn){
     fprintf(file, "Input weights  = [\n");
     for (j = 0; j < nn.weights[0].rows; j++) {
         for (k = 0; k < nn.weights[0].cols; k++) {
-            fprintf(file, "%f ", nn.weights[i].ptr[j][k]);
+            fprintf(file, "%lf ", nn.weights[i].ptr[j][k]);
         }
         fprintf(file, "\n");
     }
@@ -88,7 +97,7 @@ void save_values(Network nn){
     fprintf(file,"Input Biases = [\n");
     for (j = 0; j < nn.biases[0].rows; j++) {
         for (k = 0; k < nn.biases[0].cols; k++) {
-            fprintf(file, "%f ", nn.biases[i].ptr[j][k]);
+            fprintf(file, "%lf ", nn.biases[i].ptr[j][k]);
         }
         fprintf(file, "\n");
     }
@@ -97,7 +106,7 @@ void save_values(Network nn){
         fprintf(file, "Weights %zu = [\n", i);
         for (j = 0; j < nn.weights[i].rows; j++) {
             for (k = 0; k < nn.weights[i].cols; k++) {
-                fprintf(file, "%f ", nn.weights[i].ptr[j][k]);
+                fprintf(file, "%lf ", nn.weights[i].ptr[j][k]);
             }
             fprintf(file, "\n");
         }
@@ -105,7 +114,7 @@ void save_values(Network nn){
         fprintf(file,"Biases %zu = [\n",i);
         for (j = 0; j < nn.biases[i].rows; j++) {
             for (k = 0; k < nn.biases[i].cols; k++) {
-                fprintf(file, "%f ", nn.biases[i].ptr[j][k]);
+                fprintf(file, "%lf ", nn.biases[i].ptr[j][k]);
             }
             fprintf(file, "\n");
         }

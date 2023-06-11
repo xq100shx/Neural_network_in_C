@@ -13,10 +13,11 @@ typedef struct{
     size_t count; // layers-1 because output doesnt have weeights and biases after itself
     Matrix *weights;
     Matrix *biases;
+    Matrix *weighted_sum;
     Matrix *activations;
 }Network;
 Network nn_allocate(size_t num_of_layers,size_t *architecture);
-void nn_randomize(Network nn ,float l_range,float h_range);
+void nn_randomize(Network nn ,double min,double max);
 void nn_print(Network nn , char* name);
 void nn_clean(Network nnG);
 void free_network(Network nn);
