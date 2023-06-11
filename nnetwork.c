@@ -80,6 +80,23 @@ void nn_clean(Network nn){
     }
     matrix_fill(NN_OUTPUT(nn),0);
 }
+void load_network(Network nn){
+    FILE *file;
+    file = fopen("network.txt","r");
+    for(int n=0;n<nn.count;n++) {
+        for(int i=0;i<nn.weights[n].rows;i++){
+            for(int j=0;j<nn.weights[n].cols;j++){
+                fscanf(file,"%lf",&nn.weights[n].ptr[i][j]);
+            }
+        }
+        for(int i=0;i<nn.biases[n].rows;i++){
+            for(int j=0;j<nn.biases[n].cols;j++){
+                fscanf(file,"%lf",&nn.biases[n].ptr[i][j]);
+            }
+        }
+    }
+    fclose(file);
+}
 TData td_allocate(size_t in_count,size_t out_count,size_t datasets){
     TData training_data;
     training_data.datasets = datasets;
@@ -148,7 +165,7 @@ void free_network(Network nn){
 void save_values(Network nn){
     FILE *file;
     size_t i=0,j=0,k=0;
-    file = fopen("values.txt","a");
+    file = fopen("values.txt","w");
     fprintf(file, "Input weights  = [\n");
     for (j = 0; j < nn.weights[0].rows; j++) {
         for (k = 0; k < nn.weights[0].cols; k++) {

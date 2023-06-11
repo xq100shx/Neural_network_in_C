@@ -30,6 +30,7 @@ Network nn_allocate(size_t num_of_layers,size_t *architecture);
 TData td_allocate(size_t in_count,size_t out_count,size_t datasets);
 void free_td(TData training_d);
 void pass_data(TData train);
+void load_network(Network nn);
 void nn_randomize(Network nn ,double min,double max);
 void td_print(TData t_data , char* name);
 void nn_print(Network nn , char* name);

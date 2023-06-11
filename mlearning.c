@@ -62,9 +62,9 @@ size_t backpropagation(Network nn, Network nnG, TData train_data){
         nn_clean(nnG);
         matrixcpy(NN_INPUT(nn),train_data.input[n]);
         forward(nn);
-        d_softmax(NN_OUTPUT(nnG),nn.weighted_sum[nn.count-1]);
+//        d_softmax(NN_OUTPUT(nnG),nn.weighted_sum[nn.count-1]);
         for(int i=0;i< NN_OUTPUT(nn).rows;i++){
-            NN_OUTPUT(nnG).ptr[i][0] *= (train_data.output[n].ptr[i][0] - NN_OUTPUT(nn).ptr[i][0]);
+            NN_OUTPUT(nnG).ptr[i][0] = (NN_OUTPUT(nn).ptr[i][0]-train_data.output[n].ptr[i][0]);
         }
         Matrix transpose1 = matrix_transpose(nn.activations[nn.count-1]);
         matrix_dot_product(nnG.weights[nn.count-1], NN_OUTPUT(nnG), transpose1);
