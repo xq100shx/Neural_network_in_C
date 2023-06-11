@@ -16,7 +16,7 @@ void softmax(Matrix matrix){
     double sum=0;
     for(int i=0;i<matrix.rows;i++){
         for(int j=0;j<matrix.cols;j++){
-            matrix.ptr[i][j] = expf(matrix.ptr[i][j]);
+            matrix.ptr[i][j] = exp(matrix.ptr[i][j]);
             sum += matrix.ptr[i][j];
         }
     }
@@ -157,4 +157,15 @@ Matrix matrix_transpose(Matrix matrix){
         }
     }
     return transpositon;
+}
+size_t max_value_index_vector(Matrix matrix){
+    size_t index;
+    double max = matrix.ptr[0][0];
+    for(int i=1;i<matrix.rows;i++){
+        if(matrix.ptr[i][0]>max){
+            max=matrix.ptr[i][0];
+            index = i;
+        }
+    }
+    return index;
 }

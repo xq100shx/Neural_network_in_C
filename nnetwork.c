@@ -19,11 +19,17 @@ Network nn_allocate(size_t num_of_layers,size_t *architecture){
     assert(nn.weights != NULL);
     nn.biases = calloc(nn.count,sizeof(*nn.biases));
     assert(nn.biases!= NULL);
+    nn.delta_w = calloc(nn.count,sizeof(*nn.weights));
+    assert(nn.delta_w != NULL);
+    nn.delta_b = calloc(nn.count,sizeof(*nn.biases));
+    assert(nn.delta_b!= NULL);
     for(int i=0;i<nn.count;i++){
         nn.activations[i] = matrix_allocate(architecture[i],1);
         nn.weighted_sum[i] = matrix_allocate(architecture[i+1],1);
         nn.weights[i] = matrix_allocate(architecture[i+1],nn.activations[i].rows);
         nn.biases[i] = matrix_allocate(architecture[i+1],1);
+        nn.delta_w[i] = matrix_allocate(architecture[i+1],nn.activations[i].rows);
+        nn.delta_b[i] = matrix_allocate(architecture[i+1],1);
     }
     nn.activations[nn.count] = matrix_allocate(architecture[nn.count],1);
     return nn;
@@ -67,10 +73,59 @@ void nn_clean(Network nn){
     for(size_t i=0;i<nn.count;i++){
         matrix_fill(nn.weights[i],0);
         matrix_fill(nn.biases[i],0);
+        matrix_fill(nn.delta_w[i],0);
+        matrix_fill(nn.delta_b[i],0);
         matrix_fill(nn.activations[i],0);
         matrix_fill(nn.weighted_sum[i],0);
     }
     matrix_fill(NN_OUTPUT(nn),0);
+}
+TData td_allocate(size_t in_count,size_t out_count,size_t datasets){
+    TData training_data;
+    training_data.datasets = datasets;
+    training_data.in_count = in_count;
+    training_data.out_count = out_count;
+    training_data.input = calloc(datasets,sizeof(*training_data.input));
+    training_data.output = calloc(datasets,sizeof(*training_data.output));
+    for(int i=0;i<datasets;i++){
+        training_data.input[i] = matrix_allocate(in_count,1);
+        training_data.output[i] = matrix_allocate(out_count,1);
+    }
+    return training_data;
+}
+void pass_data(TData train){
+    FILE *file;
+    file = fopen("trainingdata.txt","r");
+    for(int n=0;n<train.datasets;n++) {
+        for (int i = 0; i < train.in_count; i++) {
+            fscanf(file,"%lf", &train.input[n].ptr[i][0]);
+        }
+        for (int i = 0; i < train.out_count; i++) {
+            fscanf(file,"%lf", &train.output[n].ptr[i][0]);
+        }
+    }
+    fclose(file);
+}
+void td_print(TData t_data , char* name){
+    size_t i=0,j=0;
+    char buf[256];
+    printf("%s\n[\n",name);
+        for (i = 0; i < t_data.datasets; i++) {
+            snprintf(buf, sizeof(buf), "Data input %zu", i);
+            matrix_print(t_data.input[i], buf);
+            snprintf(buf, sizeof(buf), "Data output %zu", i);
+            matrix_print(t_data.output[i], buf);
+        }
+    printf("]\n");
+}
+void free_td(TData training_d){
+    size_t i=0;
+    for(i=0;i<training_d.datasets;i++){
+        free_matrix(training_d.input[i]);
+        free_matrix(training_d.output[i]);
+    }
+    free(training_d.input);
+    free(training_d.output);
 }
 void free_network(Network nn){
     size_t i=0,j=0;
@@ -79,8 +134,16 @@ void free_network(Network nn){
         free_matrix(nn.weighted_sum[i]);
         free_matrix(nn.weights[i]);
         free_matrix(nn.biases[i]);
+        free_matrix(nn.delta_w[i]);
+        free_matrix(nn.delta_b[i]);
     }
     free_matrix(NN_OUTPUT(nn));
+    free(nn.activations);
+    free(nn.weighted_sum);
+    free(nn.weights);
+    free(nn.biases);
+    free(nn.delta_w);
+    free(nn.delta_b);
 }
 void save_values(Network nn){
     FILE *file;

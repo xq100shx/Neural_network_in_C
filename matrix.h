@@ -25,6 +25,7 @@ void matrixcpy(Matrix destination, Matrix source);
 void apply_actvf(double(*f)(double), Matrix matrix, const char* name_of_func);
 void matrix_multiply(Matrix matrix,double constant);
 Matrix matrix_transpose(Matrix matrix);
+size_t max_value_index_vector(Matrix matrix);
 
 void free_matrix(Matrix matrix);
 

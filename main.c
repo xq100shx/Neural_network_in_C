@@ -39,7 +39,7 @@ int unit_testing() {
     size_t input_size = 2;
     size_t output_size = 2;
     size_t data_sets = 100;
-    double learning_rate = 0.25f;
+    double learning_rate = 0.14;
 #if 0 //randf() test
     printf("%d\n",RAND_MAX);
     for(size_t i=0;i<5;i++) {
@@ -86,12 +86,13 @@ int unit_testing() {
     free_matrix(testDst);
 #endif
 #if 0 //matrix_randomize test
-    Matrix test = matrix_allocate(5,4);
+    Matrix test = matrix_allocate(5,1);
     float min = 0.0f;
     float max = 1000.0f;
     printf("Range: [%f , %f]\n",min,max);
     matrix_randomize(test,min,max);
     PRINT_MATRIX(test);
+    printf("%zu", max_value_index_vector(test));
     free_matrix(test);
 #endif
 #if 0 //matrixcpy test
@@ -247,55 +248,41 @@ int unit_testing() {
     PRINT_NN(test);
     free_network(test);
 #endif
-#if 0 //cost test
-    Network test = nn_allocate(layers, architecture);
-    for(int i=0;i<10;i++){
-        nn_randomize(test, -1, 1);
-        printf("avg cost = %f\n", cost(test, input_size, output_size, data_sets));
-}
-    free_network(test);
-#endif
-#if 1 //backpropagation & learning test
+#if 1 //cost test
     Network test = nn_allocate(layers, architecture);
     Network testG = nn_allocate(layers, architecture);
-    nn_randomize(test, -1, 1);
-
-    printf("avg cost = %f\n", cost(test, input_size, output_size, data_sets));
+    nn_randomize(test,-1,1);
+    TData td = td_allocate(2,2,4);
+    pass_data(td);
+//    printf("cost %lf\n", cost(test,td));
     for(int i=0;i<1000;i++){
-        backpropagation(test,testG,input_size, output_size, data_sets);
+        printf("cost %lf\n", cost(test,td));
+//        printf("s rate: %lf\n", success(test,td));
+        backpropagation(test,testG,td);
         learn(test,testG,learning_rate);
-}
-    printf("avg cost = %f\n", cost(test, input_size, output_size, data_sets));
-    free_network(test);
-    free_network(testG);
+    }
+    for(int i=0;i<td.datasets;i++){
+        matrixcpy(NN_INPUT(test),td.input[i]);
+        forward(test);
+        PRINT_MATRIX(NN_OUTPUT(test));
+    }
+//    printf("cost %lf", cost(test,td));
+#endif
+#if 0 //backpropagation & learning test
+
 #endif
 #if 0 // file
-    FILE *file;
-
-    file = fopen("trainingdata.txt","r");
-    int in=2;
-    int data_sets = 2;
-    int out = 1;
-    float x[in][1];
-    float buffer[out][1];
-    for(int n=0;n<data_sets;n++) {
-        for (int i = 0; i < in; i++) {
-            fscanf(file, "%f", &x[i][0]);
-        }
-        for(int i = 0;i<out;i++) {
-            fscanf(file, "%f", &buffer[i][0]);
-        }
-
-        for (int i = 0; i < in; i++) {
-            printf("%f\n",x[i][0]);
-        }
-        for(int i = 0;i<out;i++) {
-            printf("%f\n",buffer[i][0]);
-        }
-        printf("\n");
-
+    TData training_data = td_allocate(2,1,4);
+    Network test = nn_allocate(layers, architecture);
+    nn_randomize(test,-1,1);
+    pass_data(training_data);
+    for(int i=0;i<training_data.datasets;i++){
+        matrixcpy(test.activations[0],training_data.input[i]);
+        PRINT_NN(test);
+        forward(test);
+        PRINT_NN(test);
     }
-    fclose(file);
+    free_td(training_data);
 #endif
     return 0;
 }

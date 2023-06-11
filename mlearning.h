@@ -13,8 +13,9 @@
 #include "matrix.h"
 #include "actvfunc.h"
 void forward(Network nn);
-double cost(Network nn,size_t input_size,size_t output_size,size_t data_sets);
-size_t backpropagation(Network nn, Network nnG, size_t input_size,size_t output_size,size_t data_sets);
+double cost(Network nn,TData train_data);
+size_t backpropagation(Network nn, Network nnG, TData train_data);
 void learn(Network nn, Network nnG, double learning_rate);
-bool is_valid(float x);
+double success(Network nn,TData train);
+bool is_valid(double x);
 #endif //NEURALNETWORK_MLEARNING_H

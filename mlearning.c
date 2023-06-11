@@ -9,104 +9,93 @@
 #include "nnetwork.h"
 #include "matrix.h"
 #include "actvfunc.h"
-bool is_valid(float x)
+bool is_valid(double x)
 {
     return x*0.0==0.0;
 }
 void forward(Network nn){
-    for(int i=0;i<nn.count;i++){
+    for(int i=0;i<nn.count-1;i++){
         matrix_dot_product(nn.weighted_sum[i],nn.weights[i],nn.activations[i]);
         matrix_sum(nn.weighted_sum[i],nn.biases[i]);
         matrixcpy(nn.activations[i+1],nn.weighted_sum[i]);
-        ACTIVATE(nn.activations[i+1],Sigmoid); // keeping it as it is but would be nice to change it
+        ACTIVATE(nn.activations[i+1],ReLU); // keeping it as it is but would be nice to change it
                                                //Sigmoid/ReLU/LeakyReLU//
     }
+    matrix_dot_product(nn.weighted_sum[nn.count-1],nn.weights[nn.count-1],nn.activations[nn.count-1]);
+    matrix_sum(nn.weighted_sum[nn.count-1],nn.biases[nn.count-1]);
+    matrixcpy(NN_OUTPUT(nn),nn.weighted_sum[nn.count-1]);
     softmax(NN_OUTPUT(nn));
 }
-double cost(Network nn,size_t input_size,size_t output_size,size_t data_sets){
-    assert(NN_INPUT(nn).rows == input_size);
-    assert(NN_OUTPUT(nn).rows == output_size);
-    Matrix input = matrix_allocate(input_size,1);
-    Matrix output = matrix_allocate(output_size,1);
-    FILE *file;
-    double cost = 0.0f;
-    file = fopen("trainingdata.txt","r");
-    for(int n=0;n<data_sets;n++) {
-        for (int i = 0; i < input_size; i++) {
-            fscanf(file,"%f", &input.ptr[i][0]);
-        }
-        for(int i = 0;i<output_size;i++) {
-            fscanf(file, "%f", &output.ptr[i][0]);
-        }
-        matrixcpy(NN_INPUT(nn),input);
+double success(Network nn,TData train){
+    size_t success = 0;
+
+    for(int i=0;i<train.datasets;i++){
+        matrixcpy(NN_INPUT(nn),train.input[i]);
         forward(nn);
-        for(int i=0;i<output_size;i++){
-            double difference = NN_OUTPUT(nn).ptr[i][0] - output.ptr[i][0];
-//            PRINT_MATRIX(NN_OUTPUT(nn));
+        if(max_value_index_vector(NN_OUTPUT(nn))== max_value_index_vector(train.output[i])) success++;
+    }
+    return (double)success/(double) train.datasets;
+}
+double cost(Network nn,TData train_data){
+    assert(NN_INPUT(nn).rows == train_data.in_count);
+    assert(NN_OUTPUT(nn).rows == train_data.out_count);
+    double cost = 0.0f;
+    for(int n=0;n<train_data.datasets;n++) {
+        matrixcpy(NN_INPUT(nn),train_data.input[n]);
+        forward(nn);
+        for(int i=0;i<train_data.out_count;i++){
+            double difference = NN_OUTPUT(nn).ptr[i][0] - train_data.output[n].ptr[i][0];
             cost += difference * difference;
         }
     }
-    fclose(file);
-    return cost/(double)data_sets;
+    return cost/(double)train_data.datasets;
 }
-size_t backpropagation(Network nn, Network nnG, size_t input_size,size_t output_size,size_t data_sets){
-    assert(NN_INPUT(nn).rows == input_size);
-    assert(NN_OUTPUT(nn).rows == output_size);
-    Matrix input = matrix_allocate(input_size,1);
-    Matrix output = matrix_allocate(output_size,1);
-    FILE *file;
-    double cost = 0.0f;
+size_t backpropagation(Network nn, Network nnG, TData train_data){
+    assert(NN_INPUT(nn).rows == train_data.in_count);
+    assert(NN_OUTPUT(nn).rows == train_data.out_count);
     nn_clean(nnG);
-    file = fopen("trainingdata.txt","r");
-    for(int n=0;n<data_sets;n++) {
-        for (int i = 0; i < input_size; i++) {
-            fscanf(file,"%lf", &input.ptr[i][0]);
-        }
-        for(int i = 0;i<output_size;i++) {
-            fscanf(file, "%lf", &output.ptr[i][0]);
-        }
-        for(int i=0;i<=nn.count;i++){
-            matrix_fill(nnG.activations[i],0);
-        }
-        matrixcpy(NN_INPUT(nn),input);
-        forward(nn);
-        PRINT_NN(nn);
-        //error output
-        d_softmax(NN_OUTPUT(nnG),nn.weighted_sum[nn.count-1]);
-        for(int i =0;i< NN_OUTPUT(nnG).rows;i++){
-            NN_OUTPUT(nnG).ptr[i][0] *= (output.ptr[i][0] - NN_OUTPUT(nn).ptr[i][0]);
-        }
-        //delta output
-        Matrix transpose = matrix_transpose(nn.activations[nn.count-1]);
-        matrix_dot_product(nnG.weights[nn.count-1], NN_OUTPUT(nnG),transpose);
-        matrixcpy(nnG.biases[nn.count-1], NN_OUTPUT(nnG));
-        free_matrix(transpose);
-
-        for(size_t i=nn.count-1;i>0;i--){ // error for hidden
-            Matrix transposition1 = matrix_transpose(nn.weights[i]);
-            matrix_dot_product(nnG.activations[i],transposition1,nnG.activations[i+1]);
-            free_matrix(transposition1);
-            for(int j=0;j<nnG.activations[i].rows;j++){
-                nnG.activations[i].ptr[j][0] *= d_Sigmoid(nn.weighted_sum[i-1].ptr[j][0]);
-            }
-            Matrix transposition2 = matrix_transpose(nn.activations[i-1]); //delta hidden
-            matrix_dot_product(nnG.weights[i-1],nnG.activations[i],transposition2);
-            matrixcpy(nnG.biases[i-1],nnG.activations[i]);
-            free_matrix(transposition2);
-        }
+    for(int k=0;k<nn.count-1;k++){
+        matrix_fill(nn.delta_w[k],0);
+        matrix_fill(nn.delta_b[k],0);
     }
-    fclose(file);
-    free_matrix(input);
-    free_matrix(output);
+    for(int n=0;n<train_data.datasets;n++){
+        nn_clean(nnG);
+        matrixcpy(NN_INPUT(nn),train_data.input[n]);
+        forward(nn);
+        d_softmax(NN_OUTPUT(nnG),nn.weighted_sum[nn.count-1]);
+        for(int i=0;i< NN_OUTPUT(nn).rows;i++){
+            NN_OUTPUT(nnG).ptr[i][0] *= (train_data.output[n].ptr[i][0] - NN_OUTPUT(nn).ptr[i][0]);
+        }
+        Matrix transpose1 = matrix_transpose(nn.activations[nn.count-1]);
+        matrix_dot_product(nnG.weights[nn.count-1], NN_OUTPUT(nnG), transpose1);
+        matrixcpy(nnG.biases[nn.count-1], NN_OUTPUT(nnG));
+        matrix_sum(nn.delta_w[nn.count-1], nnG.weights[nn.count-1]);
+        matrix_sum(nn.delta_b[nn.count-1], nnG.biases[nn.count-1]);
+        Matrix transpose2 = matrix_transpose(nn.weights[nn.count-1]);
+        matrix_dot_product(nnG.activations[nn.count-1],transpose2, NN_OUTPUT(nnG));
+        for(int i=0;i<nnG.activations[nn.count-1].rows;i++){
+            nnG.activations[nn.count-1].ptr[i][0] *= d_ReLU(nn.weighted_sum[nn.count-2].ptr[i][0]);
+        }
+        Matrix transpose3 = matrix_transpose(nn.activations[nn.count-2]);
+        matrix_dot_product(nnG.weights[nn.count-2],nnG.activations[nn.count-1],transpose3);
+        matrixcpy(nnG.biases[nn.count-2],nnG.activations[nn.count-1]);
+        matrix_sum(nn.delta_w[nn.count-2], nnG.weights[nn.count-2]);
+        matrix_sum(nn.delta_b[nn.count-2], nnG.biases[nn.count-2]);
+
+        free_matrix(transpose1);
+        free_matrix(transpose2);
+        free_matrix(transpose3);
+
+    }
     for(int i=0;i<nnG.count;i++){
         for(int j=0;j<nnG.weights[i].rows;j++){
             for(int k=0;k<nnG.weights[i].cols;k++){
-                nnG.weights[i].ptr[j][k] /= (double)data_sets;
+                nn.delta_w[i].ptr[j][k] /= (double)train_data.datasets;
             }
         }
         for(int j=0;j<nnG.biases[i].rows;j++){
             for(int k=0;k<nnG.biases[i].cols;k++){
-                nnG.biases[i].ptr[j][k] /= (double)data_sets;
+                nn.delta_b[i].ptr[j][k] /= (double)train_data.datasets;
             }
         }
     }
@@ -116,11 +105,11 @@ void learn(Network nn, Network nnG, double learning_rate){
     for(int i=0;i<nn.count;i++){
         for(int j=0;j<nn.weights[i].rows;j++){
             for(int k=0;k<nn.weights[i].cols;k++){
-                nn.weights[i].ptr[j][k] -= (nnG.weights[i].ptr[j][k] * learning_rate);
+                nn.weights[i].ptr[j][k] -= (nn.delta_w[i].ptr[j][k] * learning_rate);
             }
         }
         for(int j=0;j<nn.biases[i].rows;j++){
-            nn.biases[i].ptr[j][0] -= (nnG.biases[i].ptr[j][0] * learning_rate);
+            nn.biases[i].ptr[j][0] -= (nnG.delta_b[i].ptr[j][0] * learning_rate);
         }
     }
 }
