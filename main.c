@@ -10,33 +10,37 @@
 int unit_testing();
 
 int main() {
-    size_t architecture[] = {2, 4, 2};
+    size_t architecture[] = {2, 3, 2};
     size_t layers = sizeof(architecture) / sizeof(architecture[0]);
-    double learning_rate = 0.15;
-    srand(time(NULL));
+    double learning_rate = 0.25;
     Network test = nn_allocate(layers, architecture);
     Network testG = nn_allocate(layers, architecture);
-    load_network(test);
-//    nn_randomize(test,-1,1);
     TData td = td_allocate(2,2,4);
+    srand(time(NULL));
     pass_data(td);
-//    printf("cost %lf\n", cost(test,td));
-//    for(int i=0;i<10000;i++){
-//        if(i%1000==0) printf("s rate: %lf\n", success(test,td));
-//        backpropagation(test,testG,td);
-//        learn(test,testG,learning_rate);
-//    }
-//    printf("cost %lf\n", cost(test,td));
+#if 1
+    nn_randomize(test,-1,1);
+    printf("cost %lf\n", cost(test,td));
+    for(int i=0;i<4000;i++){
+//        if(i%10==0) printf("s rate: %lf\n", success(test,td));
+        backpropagation(test,testG,td);
+        learn(test,testG,learning_rate);
+        printf("cost %lf\n", cost(test,td));
+    }
+#endif
+#if 0
+    load_network(test);
     for(int i=0;i<td.datasets;i++){
         matrixcpy(NN_INPUT(test),td.input[i]);
         forward(test);
         PRINT_MATRIX(NN_OUTPUT(test));
     }
+#endif
     save_values(test);
     free_network(test);
     free_network(testG);
     free_td(td);
-    unit_testing();
+//    unit_testing();
     return 0;
 }
 int unit_testing() {
