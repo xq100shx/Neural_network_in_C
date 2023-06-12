@@ -45,7 +45,7 @@ int main() {
 }
 int unit_testing() {
     float x = 10;
-    size_t architecture[] = {2, 4, 2};
+    size_t architecture[] = {2, 3,3, 2};
     size_t layers = sizeof(architecture) / sizeof(architecture[0]);
     double learning_rate = 0.14;
 #if 0 //randf() test

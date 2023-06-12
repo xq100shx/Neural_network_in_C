@@ -12,10 +12,15 @@
 #include "nnetwork.h"
 #include "matrix.h"
 #include "actvfunc.h"
+
 void forward(Network nn);
+
 double cost(Network nn,TData train_data);
+
 size_t backpropagation(Network nn, Network nnG, TData train_data);
+
 void learn(Network nn, Network nnG, double learning_rate);
+
 double success(Network nn,TData train);
-bool is_valid(double x);
+
 #endif //NEURALNETWORK_MLEARNING_H

@@ -12,6 +12,7 @@ double randf(double min, double max){
     double range = (max-min) * random;
     return min + range;
 }
+
 void softmax(Matrix matrix){
     double sum=0;
     for(int i=0;i<matrix.rows;i++){
@@ -26,6 +27,7 @@ void softmax(Matrix matrix){
         }
     }
 }
+
 void d_softmax(Matrix destination,Matrix matrix){
     assert(destination.rows==matrix.rows);
     assert(destination.cols==matrix.cols);
@@ -40,6 +42,7 @@ void d_softmax(Matrix destination,Matrix matrix){
         }
     }
 }
+
 Matrix matrix_allocate(size_t rows, size_t cols){
     Matrix matrix;
     matrix.rows = rows;
@@ -54,6 +57,7 @@ Matrix matrix_allocate(size_t rows, size_t cols){
     assert(matrix.ptr!=NULL);
     return matrix;
 }
+
 void matrix_fill(Matrix matrix, double value){
     size_t i=0,j=0;
     for(i=0;i<matrix.rows;i++){
@@ -62,6 +66,7 @@ void matrix_fill(Matrix matrix, double value){
         }
     }
 }
+
 void matrix_dot_product(Matrix destination, Matrix a, Matrix b){
     assert(a.cols == b.rows);
     assert(destination.rows  == a.rows);
@@ -77,6 +82,7 @@ void matrix_dot_product(Matrix destination, Matrix a, Matrix b){
         }
     }
 }
+
 void matrix_sum(Matrix destination, Matrix a) {
     assert(destination.rows == a.rows);
     assert(destination.cols == a.cols);
@@ -87,6 +93,7 @@ void matrix_sum(Matrix destination, Matrix a) {
         }
     }
 }
+
 void matrix_randomize(Matrix matrix, double min, double max){
     size_t i=0,j=0;
     for(i=0;i<matrix.rows;i++){
@@ -95,6 +102,7 @@ void matrix_randomize(Matrix matrix, double min, double max){
         }
     }
 }
+
 void matrix_print(Matrix matrix,const char* name_of_matrix) {
     int maxDigits = 0;
     // Znajdowanie najdłuższego elementu w tablicy
@@ -117,6 +125,7 @@ void matrix_print(Matrix matrix,const char* name_of_matrix) {
     }
     printf("\n");
 }
+
 void matrixcpy(Matrix destination, Matrix source){
     assert(source.rows == destination.rows);
     assert(source.cols == destination.cols);
@@ -127,6 +136,7 @@ void matrixcpy(Matrix destination, Matrix source){
         }
     }
 }
+
 void apply_actvf(double(*actvfunc)(double),Matrix matrix,const char* name_of_func){
 //    printf("Applying: %s\n",name_of_func); // func name, testing only
     for(int i=0;i<matrix.rows;i++){
@@ -135,12 +145,14 @@ void apply_actvf(double(*actvfunc)(double),Matrix matrix,const char* name_of_fun
         }
     }
 }
+
 void free_matrix(Matrix matrix){
     for(int i=0;i<matrix.rows;i++){
         free(matrix.ptr[i]);
     }
     free(matrix.ptr);
 }
+
 void matrix_multiply(Matrix matrix,double constant){
     for(int i=0;i<matrix.rows;i++){
         for(int j=0;j<matrix.cols;j++){
@@ -148,6 +160,7 @@ void matrix_multiply(Matrix matrix,double constant){
         }
     }
 }
+
 Matrix matrix_transpose(Matrix matrix){
     assert(matrix.ptr != NULL);
     Matrix transpositon = matrix_allocate(matrix.cols,matrix.rows);
@@ -158,6 +171,7 @@ Matrix matrix_transpose(Matrix matrix){
     }
     return transpositon;
 }
+
 size_t max_value_index_vector(Matrix matrix){
     size_t index;
     double max = matrix.ptr[0][0];

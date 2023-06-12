@@ -34,6 +34,7 @@ Network nn_allocate(size_t num_of_layers,size_t *architecture){
     nn.activations[nn.count] = matrix_allocate(architecture[nn.count],1);
     return nn;
 }
+
 void nn_randomize(Network nn ,double min,double max){
     size_t i=0,j=0;
     for(i=0;i<nn.count;i++){
@@ -41,6 +42,7 @@ void nn_randomize(Network nn ,double min,double max){
         matrix_randomize(nn.biases[i],min,max);
     }
 }
+
 void nn_print(Network nn , char* name){
     size_t i=0,j=0;
     char buf[256];
@@ -69,6 +71,7 @@ void nn_print(Network nn , char* name){
     matrix_print(NN_OUTPUT(nn),buf);
     printf("]\n");
 }
+
 void nn_clean(Network nn){
     for(size_t i=0;i<nn.count;i++){
         matrix_fill(nn.weights[i],0);
@@ -80,6 +83,7 @@ void nn_clean(Network nn){
     }
     matrix_fill(NN_OUTPUT(nn),0);
 }
+
 void load_network(Network nn){
     FILE *file;
     file = fopen("network.txt","r");
@@ -97,6 +101,7 @@ void load_network(Network nn){
     }
     fclose(file);
 }
+
 TData td_allocate(size_t in_count,size_t out_count,size_t datasets){
     TData training_data;
     training_data.datasets = datasets;
@@ -110,6 +115,7 @@ TData td_allocate(size_t in_count,size_t out_count,size_t datasets){
     }
     return training_data;
 }
+
 void pass_data(TData train){
     FILE *file;
     file = fopen("trainingdata.txt","r");
@@ -123,6 +129,7 @@ void pass_data(TData train){
     }
     fclose(file);
 }
+
 void td_print(TData t_data , char* name){
     size_t i=0,j=0;
     char buf[256];
@@ -135,6 +142,7 @@ void td_print(TData t_data , char* name){
         }
     printf("]\n");
 }
+
 void free_td(TData training_d){
     size_t i=0;
     for(i=0;i<training_d.datasets;i++){
@@ -144,6 +152,7 @@ void free_td(TData training_d){
     free(training_d.input);
     free(training_d.output);
 }
+
 void free_network(Network nn){
     size_t i=0,j=0;
     for(i=0;i<nn.count;i++){
@@ -162,6 +171,7 @@ void free_network(Network nn){
     free(nn.delta_w);
     free(nn.delta_b);
 }
+
 void save_values(Network nn){
     FILE *file;
     size_t i=0,j=0,k=0;

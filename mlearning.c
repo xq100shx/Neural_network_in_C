@@ -9,10 +9,7 @@
 #include "nnetwork.h"
 #include "matrix.h"
 #include "actvfunc.h"
-bool is_valid(double x)
-{
-    return x*0.0==0.0;
-}
+
 void forward(Network nn){
     for(int i=0;i<nn.count-1;i++){
         matrix_dot_product(nn.weighted_sum[i],nn.weights[i],nn.activations[i]);
@@ -26,6 +23,7 @@ void forward(Network nn){
     matrixcpy(NN_OUTPUT(nn),nn.weighted_sum[nn.count-1]);
     softmax(NN_OUTPUT(nn));
 }
+
 double success(Network nn,TData train){
     size_t success = 0;
 
@@ -36,6 +34,7 @@ double success(Network nn,TData train){
     }
     return (double)success/(double) train.datasets;
 }
+
 double cost(Network nn,TData train_data){
     assert(NN_INPUT(nn).rows == train_data.in_count);
     assert(NN_OUTPUT(nn).rows == train_data.out_count);
@@ -50,6 +49,7 @@ double cost(Network nn,TData train_data){
     }
     return cost/(double)train_data.datasets;
 }
+
 size_t backpropagation(Network nn, Network nnG, TData train_data){
     assert(NN_INPUT(nn).rows == train_data.in_count);
     assert(NN_OUTPUT(nn).rows == train_data.out_count);
@@ -101,6 +101,7 @@ size_t backpropagation(Network nn, Network nnG, TData train_data){
     }
     return 0;
 }
+
 void learn(Network nn, Network nnG, double learning_rate){
     for(int i=0;i<nn.count;i++){
         for(int j=0;j<nn.weights[i].rows;j++){
